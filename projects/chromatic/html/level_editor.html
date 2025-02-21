@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level Editor</title>
+    <style>
+        p {
+            font-family: 'Courier New', Courier, monospace;
+            color:rgb(255, 255, 255);
+        }
+
+        button {
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+</head>
+<body style="background-color: #1b1b1b;">
+
+    <div style="text-align: center;">
+        <div style="float: left;">
+            <canvas id="display" style="cursor: none;"
+            onmouseleave="Level.drawLevel(); draw();"></canvas>
+        </body>
+
+        <div style="float: right;">
+            <button onclick="testLevel();">Test level</button>
+            <p style="margin: 0%;">Bottom text:</p>
+            <input 
+            style="width: 140px;" id="levelText" 
+            oninput="makeLevelText();"
+            onfocus="inputingText = true;"
+            onblur="inputingText = false;">
+            <p style="margin: 0%;">Input spawn:</p>
+            <button onclick="inputingSpawn ^= 1;">R</button>
+            <button onclick="inputingSpawn ^= 2;">G</button>
+            <button onclick="inputingSpawn ^= 4;">B</button>
+            <p style="margin: 0%;">Select type:</p>
+            <select id="type" size="1" onchange="changeType(this.value)">
+                <option value="select type" disabled selected>select type:</option>
+                <option value="spikes">spikes</option>
+                <option value="solid">solid platform</option>
+                <option value="semi">semi paltform</option>
+                <option value="portal">portal</option>
+                <option value="ladder">ladder</option>
+                <option value="goal">goal</option>
+            </select>
+            <p style="margin: 0%;">Select object:</p>
+            <input type="number" id="obj select" style="width: 140px;" value="0" onchange="objSelect(this)"><br>
+            <button onclick="currentTypeAddObj();">Add object</button><br>
+            <button onclick="currentTypeRemoveObj();">Remove object</button><br>
+            <button onclick="currentTypeInsertObj();">Insert object</button><br>
+            <button onclick="currentTypeCopyObj();">Copy object</button>
+            <p style="margin: 0%;">X value:</p>
+            <input type="number" id="X val" style="width: 140px;" value="0" onchange="setValue(0, this)">
+            <p style="margin: 0%;">Y value:</p>
+            <input type="number" id="Y val" style="width: 140px;" value="0" onchange="setValue(1, this)">
+            <p style="margin: 0%;">Width:</p>
+            <input type="number" id="width" style="width: 140px;" value="0" onchange="setValue(2, this)">
+            <p style="margin: 0%;">Height:</p>
+            <input type="number" id="height" style="width: 140px;" value="0" onchange="setValue(3, this)">
+            <p style="margin: 0%;">Color:</p>
+            <input type="number" id="color" style="width: 140px;" value="0" onchange="setValue(4, this)"><br>
+            <button onclick="inputingAreaData.x ^= 1;">set x</button>
+            <button onclick="inputingAreaData.y ^= 1;">set y</button><br>
+            <button onclick="inputingAreaData.w ^= 1;">set width</button><br>
+            <button onclick="inputingAreaData.h ^= 1;">set height</button><br>
+            <button onclick="
+                inputingAreaData.x ^= 1;
+                inputingAreaData.y = inputingAreaData.x;
+                ">set position</button><br>
+            <button onclick="
+                inputingAreaData.w ^= 1;
+                inputingAreaData.h = inputingAreaData.w;
+                ">set dimensions</button><br>
+            <button onclick="
+                navigator.clipboard.writeText(btoa(JSON.stringify(levelData)));
+                ">Copy level data</button><br>
+            <button id="lvlDataButton" onclick="
+            document.getElementById('levelData').style.display = '';
+            this.style.display = 'none';
+            ">input level data</button>
+            <input id="levelData" style="width: 140px; display: none;"
+            onchange="
+            levelData = JSON.parse(atob(this.value));
+            Level.loadLevel(new Level(btoa(JSON.stringify(levelData))));
+            Level.drawLevel();
+            draw();
+            this.value = '';
+            this.style.display = 'none';
+            document.getElementById('lvlDataButton').style.display = '';
+            objSelect(document.getElementById('obj select'));
+            document.getElementById('levelText').value = levelData[8];
+            ">
+        </div>
+    </div>
+
+    <a href="../html/level_test.html" style="display: none;" target="_blank" id="test"></a>
+
+    <script src="../editorScripts/input.js"></script>
+    <script src="../script/font.js"></script>
+    <script src="../classes/area.js"></script>
+    <script src="../classes/platforms.js"></script>
+    <script src="../classes/level.js"></script>
+    <script src="../script/display.js"></script>
+    <script src="../editorScripts/setup.js"></script>
+    <script src="../editorScripts/levelEdit.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>game</title>
+    <style>
+        #canvasContainer {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body style="background-color: rgb(16, 16, 16);">
+    <div id="canvasContainer">
+        <canvas id="Canvas" style="background-color: black;">
+    </div>
+
+    <script>
+        //tracks what keys are down
+        let keysDown = [];
+        function keysDownAdd(e) {
+            if (!keysDown.includes(e.key))
+                keysDown.push(e.key);
+        }
+        function keysDownRemove(e) {
+            if (keysDown.includes(e.key)) {
+                if (e.key === "Shift")
+                    keysDown = keysDown.slice(0, keysDown.indexOf("Shift"));
+                keysDown.splice(keysDown.indexOf(e.key), 1);
+            };
+        }
+        window.addEventListener('keydown', keysDownAdd);
+        window.addEventListener('keyup', keysDownRemove);
+        //-------------------------
+    </script>
+    <script src="ascii.js"></script>
+    <script src="display.js"></script>
+    <script src="menu.js"></script>
+    <script src="player.js"></script>
+    <script src="platforms.js"></script>
+    <script src="levels.js"></script>
+    <script src="levelEditor.js"></script>
+    <script src="levelData.js"></script>
+</body>
+
+</html>

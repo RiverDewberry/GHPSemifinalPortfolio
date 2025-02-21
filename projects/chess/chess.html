@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP CSP Project</title>
+</head>
+
+<body style="background-color: black;">
+
+    <div style="text-align: center;">
+        <canvas id="Canvas" style="background-color: black;">
+    </div>
+
+    <script>
+        const canvas = document.getElementById("Canvas");
+        canvas.width = 490;
+        canvas.height = 528;
+        const ctx = canvas.getContext("2d");
+        ctx.font = "16px monospace";
+
+        const gameData = {//an object to store game data
+            position: { x: 0, y: 7 },//stores player position
+            boardData: new Uint8Array(
+                [
+                    0X3, 0X1, 0X2, 0X4, 0X5, 0X2, 0X1, 0X3,
+                    0X0, 0X0, 0X0, 0X0, 0X0, 0X0, 0X0, 0X0,
+                    0X7, 0X7, 0X7, 0X7, 0X7, 0X7, 0X7, 0X7,
+                    0X7, 0X7, 0X7, 0X7, 0X7, 0X7, 0X7, 0X7,
+                    0X7, 0X7, 0X7, 0X7, 0X7, 0X7, 0X7, 0X7,
+                    0X7, 0X7, 0X7, 0X7, 0X7, 0X7, 0X7, 0X7,
+                    0X8, 0X8, 0X8, 0X8, 0X8, 0X8, 0X8, 0X8,
+                    0XB, 0X9, 0XA, 0XC, 0XD, 0XA, 0X9, 0XB,
+                    0B00001111
+                ]
+                //board data is stored as a byte per square,
+                //the 3 least significant bits store piece type,
+                //the next bit stores piece color,
+                //the next bit stores if a square can be attacked by 
+                //a piece of the color not taking their turn,
+                //the next bit stores where the selected piece can move,
+                //the next bit is unused.
+                //the final bit stores if a piece is selected.
+
+                //index 64 stores metadata
+                //the most significant bit stores if a piece has been selected to move
+                //the next 2 bits store if a side is in check 
+                //(more significant bit = white) (less significant bit = black)
+                //the next bit stores turn (0 = white) (1 = black)
+                //the last 4 bits store if a side can castle 
+                //(more significant bits = queenside) (less significant bits = kingside)
+                //(more significant bit = black) (less significant bit = white)
+
+                /*
+                4 least significant bits to piece type conversion:
+                0B0000 - 0X0 - black pawn
+                0B0001 - 0X1 - black knight
+                0B0010 - 0X2 - black bishop
+                0B0011 - 0X3 - black rook
+                0B0100 - 0X4 - black queen
+                0B0101 - 0X5 - black king
+                0B0110 - 0X6 - black pawn after moving
+                0B0111 - 0X7 - empty
+                0B1000 - 0X8 - white pawn
+                0B1001 - 0X9 - white knight
+                0B1010 - 0XA - white bishop
+                0B1011 - 0XB - white rook
+                0B1100 - 0XC - white queen
+                0B1101 - 0XD - white king
+                0B1110 - 0XE - white pawn after moving
+                0B1111 - 0XF - unused
+                */
+            ),
+            pieceDisplay:
+                [
+                    new Uint8Array([0X00, 0X00, 0X5F, 0X00, 0X00,
+                        0X00, 0X28, 0X20, 0X29, 0X00, 0X00, 0X2F, 0X20, 0X5C, 0X00]),//pawn
+                    new Uint8Array([0X00, 0X2F, 0X2D, 0X20, 0X5C,
+                        0X5B, 0X5F, 0X2F, 0X20, 0X2F, 0X00, 0X2F, 0X20, 0X20, 0X5C]),//knight
+                    new Uint8Array([0X00, 0X2F, 0X2F, 0X5C, 0X00,
+                        0X00, 0X5C, 0X20, 0X2F, 0X00, 0X00, 0X2F, 0X20, 0X5C, 0X00]),//bishop
+                    new Uint8Array([0X2D, 0X5F, 0X2D, 0X5F, 0X2D,
+                        0X00, 0X7C, 0X20, 0X7C, 0X00, 0X00, 0X7C, 0X20, 0X7C, 0X00]),//rook
+                    new Uint8Array([0X00, 0X76, 0X5E, 0X76, 0X00,
+                        0X00, 0X5C, 0X20, 0X2F, 0X00, 0X00, 0X2F, 0X20, 0X5C, 0X00]),//queen
+                    new Uint8Array([0X00, 0X5F, 0X2B, 0X5F, 0X00,
+                        0X00, 0X5C, 0X20, 0X2F, 0X00, 0X00, 0X2F, 0X20, 0X5C, 0X00]),//king
+                    new Uint8Array([0X00, 0X00, 0X5F, 0X00, 0X00,
+                        0X00, 0X28, 0X20, 0X29, 0X00, 0X00, 0X2F, 0X20, 0X5C, 0X00]),//pawn
+                    new Uint8Array([0X00, 0X00, 0X00, 0X00, 0X00,
+                        0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00]) //nothing
+                ]
+        };
+
+        function displayBoard(input) {
+            ctx.clearRect(0, 0, 490, 528);
+            for (let i = 0; i < 49; ++i) {
+                for (let j = 0; j < 33; ++j) {
+                    let tempChar = 0;
+                    if (i % 6 === 0 || j % 4 === 0) {
+                        tempChar = (
+                            (i % 6 === 0) ?
+                                ((j % 4 === 0) ?
+                                    0X2BFFF3CC :
+                                    ((j % 4 === 2 && i === 0) ?
+                                        (0XFFFFFF | ((0X30 |
+                                            (((gameData.boardData[64] & 0X10) === 0X10) ?
+                                                ((j + 2) >> 2) :
+                                                8 - ((j - 2) >> 2))) << 24)) :
+                                        0X7CFFF3CC)) :
+                                ((i % 6 === 3 && j ===
+                                    (((gameData.boardData[64] & 0X10) === 0X10) ? 0 : 32)) ?
+                                    0X40FFFFFF | ((i - 3) / 6 + 1 << 24) :
+                                    0X2DFFF3CC)
+                        );//makes border
+                        if (j === (((gameData.boardData[64] & 0X10) === 0X10) ? 32 : 0) &&
+                            i - 1 < input.length && i > 0)
+                            if (input.charCodeAt(i - 1) > 32)
+                                tempChar = (input.charCodeAt(i - 1) << 24) | 0XFFFFFF;
+                        const y = ((gameData.boardData[64] & 0X10) === 0X10) ?
+                            7 - gameData.position.y :
+                            gameData.position.y;
+                        if ((i >= gameData.position.x * 6) && (i <= gameData.position.x * 6 + 6) &&
+                            (j >= y * 4) && (j <= y * 4 + 4)) tempChar ^= 0X6ECD3;
+                        //highlights current position
+                    } else {
+                        const y = ((gameData.boardData[64] & 0X10) === 0X10) ?
+                            7 - ((j - (j % 4)) / 4) : ((j - (j % 4)) / 4);
+                        const temp = gameData.boardData[((i - (i % 6)) / 6) + y * 8];
+                        tempChar =
+                            (gameData.pieceDisplay[(temp & 0B111)]
+                            [(i % 6 - 1) + (j % 4 - 1) * 5] << 24);
+                        if (tempChar === 0) tempChar = 0X23000000 | (((temp & 0X80) === 0X80) ?
+                            0XFFFFFF :
+                            (((temp & 0X20) === 0X20) ?
+                                0XF91F1F :
+                                ((((((i - (i % 6)) / 6) + y) & 1) === 1) ? 0X26130C : 0X626250)));
+                        else tempChar |= (((temp & 8) === 8) ? 0XF5DA89 : 0XA13612);
+                    }
+                    
+                    ctx.fillStyle = "#" + (tempChar & 0XFFFFFF).toString(16);
+                    ctx.fillText(String.fromCharCode((tempChar & 0XFF000000) >>> 24)
+                        , i * 10, j * 16 + 12);
+                }
+            }
+        }
+
+        const movePattern = {
+            pawn: (x, y) => {
+                const color = gameData.boardData[x + y * 8] & 0X8;
+                const yDirection = (color === 0) ? 1 : -1;
+                let r = 0;
+                y += yDirection;
+                if ((y & ~0X7) === 0) {
+                    if (((x - 1) & ~0X7) === 0 && (gameData.boardData[x - 1 + y * 8] & 0X8) !==
+                        color && (gameData.boardData[x - 1 + y * 8] & 0X7) !== 0X7)
+                        r |= targetSquare(x - 1 + y * 8);
+
+                    if (((x + 1) & ~0X7) === 0 && (gameData.boardData[x + 1 + y * 8] & 0X8) !==
+                        color && (gameData.boardData[x + 1 + y * 8] & 0X7) !== 0X7)
+                        r |= targetSquare(x + 1 + y * 8);
+
+                    if ((gameData.boardData[x - 1 + y * 8] & 0X7) === 0X7 &&
+                        ((gameData.boardData[x - 1 + (y - yDirection) * 8] & 0X7) === 0X6))
+                        r |= targetSquare(x - 1 + y * 8);
+
+                    if ((gameData.boardData[x + 1 + y * 8] & 0X7) === 0X7 &&
+                        ((gameData.boardData[x + 1 + (y - yDirection) * 8] & 0X7) === 0X6))
+                        r |= targetSquare(x + 1 + y * 8);
+
+                    if ((gameData.boardData[x + y * 8] & 0X7) === 0X7) {
+                        r |= targetSquare(x + y * 8);
+                        y += yDirection;
+                        if ((y & ~0X7) === 0 && y === (7 - yDirection) >> 1) {
+                            if ((gameData.boardData[x + y * 8] & 0X7) === 0X7)
+                                r |= targetSquare(x + y * 8);
+                        }
+                    }//normal move
+                }
+                return r;
+            },
+
+            knight: (x, y) => {
+                const color = gameData.boardData[x + y * 8] & 0X8;
+                let r = 0;
+                x += 2;
+                y -= 1;
+                if (((x & ~0X7) === 0 && (y & ~0X7) === 0) &&
+                    (((gameData.boardData[x + y * 8] & 0X7) === 0X7) ||
+                        ((gameData.boardData[x + y * 8] & 0X8) !== color)))
+                    r |= targetSquare(x + y * 8);
+                y += 2;
+                if (((x & ~0X7) === 0 && (y & ~0X7) === 0) &&
+                    (((gameData.boardData[x + y * 8] & 0X7) === 0X7) ||
+                        ((gameData.boardData[x + y * 8] & 0X8) !== color)))
+                    r |= targetSquare(x + y * 8);
+                y += 1;
+                x -= 1;
+                if (((x & ~0X7) === 0 && (y & ~0X7) === 0) &&
+                    (((gameData.boardData[x + y * 8] & 0X7) === 0X7) ||
+                        ((gameData.boardData[x + y * 8] & 0X8) !== color)))
+                    r |= targetSquare(x + y * 8);
+                x -= 2;
+                if (((x & ~0X7) === 0 && (y & ~0X7) === 0) &&
+                    (((gameData.boardData[x + y * 8] & 0X7) === 0X7) ||
+                        ((gameData.boardData[x + y * 8] & 0X8) !== color)))
+                    r |= targetSquare(x + y * 8);
+                y -= 1;
+                x -= 1;
+                if (((x & ~0X7) === 0 && (y & ~0X7) === 0) &&
+                    (((gameData.boardData[x + y * 8] & 0X7) === 0X7) ||
+                        ((gameData.boardData[x + y * 8] & 0X8) !== color)))
+                    r |= targetSquare(x + y * 8);
+                y -= 2;
+                if (((x & ~0X7) === 0 && (y & ~0X7) === 0) &&
+                    (((gameData.boardData[x + y * 8] & 0X7) === 0X7) ||
+                        ((gameData.boardData[x + y * 8] & 0X8) !== color)))
+                    r |= targetSquare(x + y * 8);
+                y -= 1;
+                x += 1;
+                if (((x & ~0X7) === 0 && (y & ~0X7) === 0) &&
+                    (((gameData.boardData[x + y * 8] & 0X7) === 0X7) ||
+                        ((gameData.boardData[x + y * 8] & 0X8) !== color)))
+                    r |= targetSquare(x + y * 8);
+                x += 2;
+                if (((x & ~0X7) === 0 && (y & ~0X7) === 0) &&
+                    (((gameData.boardData[x + y * 8] & 0X7) === 0X7) ||
+                        ((gameData.boardData[x + y * 8] & 0X8) !== color)))
+                    r |= targetSquare(x + y * 8);
+                return r;
+            },
+
+            line: (x, y, xDirection, yDirection) => {
+                const color = gameData.boardData[x + y * 8] & 0X8;
+                let r = 0;
+                x += xDirection;
+                y += yDirection;
+                while ((x & ~0X7) === 0 && (y & ~0X7) === 0) {
+                    if ((gameData.boardData[x + y * 8] & 0X7) !== 0X7) {
+                        if (((gameData.boardData[x + y * 8] & 0X8) !== color))
+                            r |= targetSquare(x + y * 8);
+                        break;
+                    }
+                    r |= targetSquare(x + y * 8);
+                    x += xDirection;
+                    y += yDirection;
+                }
+                return r;
+            },
+
+            king: (x, y) => {
+                const color = gameData.boardData[x + y * 8] & 0X8;
+                let r = 0;
+
+                if (x === 4 && y === ((color === 0X8) ? 7 : 0)) {
+
+                    if (
+                        ((color === 0X8) ?
+                            (gameData.boardData[64] & 0X1) === 0X1 :
+                            (gameData.boardData[64] & 0X2) === 0X2) &&
+                        (gameData.boardData[x + y * 8] & 0X17) === 0X5 &&
+                        (gameData.boardData[x + 1 + y * 8] & 0X17) === 0X7 &&
+                        (gameData.boardData[x + 2 + y * 8] & 0X17) === 0X7 &&
+                        (gameData.boardData[x + 3 + y * 8] & 0X7) === 0X3
+                    ) r |= targetSquare(x + 2 + y * 8);
+                    if (
+                        ((color === 0X8) ?
+                            (gameData.boardData[64] & 0X4) === 0X4 :
+                            (gameData.boardData[64] & 0X8) === 0X8) &&
+                        (gameData.boardData[x + y * 8] & 0X17) === 0X5 &&
+                        (gameData.boardData[x - 1 + y * 8] & 0X17) === 0X7 &&
+                        (gameData.boardData[x - 2 + y * 8] & 0X17) === 0X7 &&
+                        (gameData.boardData[x - 3 + y * 8] & 0X17) === 0X7 &&
+                        (gameData.boardData[x - 4 + y * 8] & 0X7) === 0X3
+                    ) r |= targetSquare(x - 3 + y * 8);
+                }
+
+                --x;
+                --y;
+                for (let i = 0; i < 3; ++i) {
+                    for (let j = 0; j < 3; ++j) {
+                        if ((i !== 1 || j !== 1) && ((x & ~0X7) === 0 && (y & ~0X7) === 0) &&
+                            (((gameData.boardData[x + y * 8] & 0X7) === 0X7) ||
+                                ((gameData.boardData[x + y * 8] & 0X8) !== color)))
+                            r |= targetSquare(x + y * 8);
+                        ++y;
+                    }
+                    ++x;
+                    y -= 3;
+                }
+                return r;
+            }
+        }
+
+        const attackPattern = {
+            pawn: (x, y) => {
+                const color = gameData.boardData[x + y * 8] & 0X8;
+                const yDirection = (color === 0) ? 1 : -1;
+                y += yDirection;
+                if ((y & ~0X7) === 0) {
+                    if (((x - 1) & ~0X7) === 0) gameData.boardData[x - 1 + y * 8] |= 0X10;//attacks
+                    if (((x + 1) & ~0X7) === 0) gameData.boardData[x + 1 + y * 8] |= 0X10;//
+                }
+            },
+
+            knight: (x, y) => {
+                const color = gameData.boardData[x + y * 8] & 0X8;
+                x += 2;
+                y -= 1;
+                if ((x & ~0X7) === 0 && (y & ~0X7) === 0) gameData.boardData[x + y * 8] |= 0X10;
+                y += 2;
+                if ((x & ~0X7) === 0 && (y & ~0X7) === 0) gameData.boardData[x + y * 8] |= 0X10;
+                y += 1;
+                x -= 1;
+                if ((x & ~0X7) === 0 && (y & ~0X7) === 0) gameData.boardData[x + y * 8] |= 0X10;
+                x -= 2;
+                if ((x & ~0X7) === 0 && (y & ~0X7) === 0) gameData.boardData[x + y * 8] |= 0X10;
+                y -= 1;
+                x -= 1;
+                if ((x & ~0X7) === 0 && (y & ~0X7) === 0) gameData.boardData[x + y * 8] |= 0X10;
+                y -= 2;
+                if ((x & ~0X7) === 0 && (y & ~0X7) === 0) gameData.boardData[x + y * 8] |= 0X10;
+                y -= 1;
+                x += 1;
+                if ((x & ~0X7) === 0 && (y & ~0X7) === 0) gameData.boardData[x + y * 8] |= 0X10;
+                x += 2;
+                if ((x & ~0X7) === 0 && (y & ~0X7) === 0) gameData.boardData[x + y * 8] |= 0X10;
+            },
+
+            line: (x, y, xDirection, yDirection) => {
+                const color = gameData.boardData[x + y * 8] & 0X8;
+                x += xDirection;
+                y += yDirection;
+                while ((x & ~0X7) === 0 && (y & ~0X7) === 0) {
+                    if ((gameData.boardData[x + y * 8] & 0X7) !== 0X7) {
+                        gameData.boardData[x + y * 8] |= 0X10;
+                        break;
+                    }
+                    gameData.boardData[x + y * 8] |= 0X10;
+                    x += xDirection;
+                    y += yDirection;
+                }
+            },
+
+            king: (x, y) => {
+                const color = gameData.boardData[x + y * 8] & 0X8;
+                --x;
+                --y;
+                for (let i = 0; i < 3; ++i) {
+                    for (let j = 0; j < 3; ++j) {
+                        if ((x & ~0X7) === 0 && (y & ~0X7) === 0)
+                            gameData.boardData[x + y * 8] |= 0X10;
+                        ++y;
+                    }
+                    ++x;
+                    y -= 3;
+                }
+            }
+        }
+
+        displayBoard("No input has been entered");
+
+        function input(e) {
+            let validInput = false;
+            if (e.key === "w" || e.key === "ArrowUp") {
+                gameData.position.y += ((gameData.boardData[64] & 0X10) === 0X10) ? 1 : -1;
+                validInput = true;
+            }
+            if (e.key === "s" || e.key === "ArrowDown") {
+                gameData.position.y -= ((gameData.boardData[64] & 0X10) === 0X10) ? 1 : -1;
+                validInput = true;
+            }
+            if (e.key === "a" || e.key === "ArrowLeft") {
+                --gameData.position.x;
+                validInput = true;
+            }
+            if (e.key === "d" || e.key === "ArrowRight") {
+                ++gameData.position.x;
+                validInput = true;
+            }
+            gameData.position.y &= 0B111;
+            gameData.position.x &= 0B111;
+
+            let temp = e.key;
+            if (e.key === " ") {
+                validInput = true;
+                temp = "Space";
+                if ((gameData.boardData[64] & 0X80) !== 0X80)
+                    selectpiece(gameData.position.x, gameData.position.y);
+                else movepiece(gameData.position.x + gameData.position.y * 8);
+            }
+
+            displayBoard(((validInput) ?
+                `The input was "${temp}"` :
+                `"${temp}" is not a valid input`));
+        }
+
+        function selectpiece(x, y) {
+            if (
+                (gameData.boardData[64] & 0X10) !== ((gameData.boardData[x + y * 8] & 0X8) << 1) &&
+                (gameData.boardData[x + y * 8] & 0X7) !== 0X7
+            ) {
+                gameData.boardData[x + y * 8] ^= 0X80;
+                gameData.boardData[64] |= 0X80;
+                let r = 0;
+                switch (gameData.boardData[x + y * 8] & 0X7) {
+                    case 0:
+                        r |= movePattern.pawn(x, y);
+                        break;
+                    case 1:
+                        r |= movePattern.knight(x, y);
+                        break;
+                    case 2:
+                        r |= movePattern.line(x, y, 1, 1);
+                        r |= movePattern.line(x, y, -1, 1);
+                        r |= movePattern.line(x, y, 1, -1);
+                        r |= movePattern.line(x, y, -1, -1);
+                        break;
+                    case 3:
+                        r |= movePattern.line(x, y, 0, 1);
+                        r |= movePattern.line(x, y, 0, -1);
+                        r |= movePattern.line(x, y, 1, 0);
+                        r |= movePattern.line(x, y, -1, 0);
+                        break;
+                    case 4:
+                        r |= movePattern.line(x, y, 1, 1);
+                        r |= movePattern.line(x, y, -1, 1);
+                        r |= movePattern.line(x, y, 1, -1);
+                        r |= movePattern.line(x, y, -1, -1);
+                        r |= movePattern.line(x, y, 0, 1);
+                        r |= movePattern.line(x, y, 0, -1);
+                        r |= movePattern.line(x, y, 1, 0);
+                        r |= movePattern.line(x, y, -1, 0);
+                        break;
+                    case 5:
+                        findDanger();
+                        r |= movePattern.king(x, y);
+                        break;
+                    default: break;
+
+                }
+                if (r === 0) {
+                    gameData.boardData[x + y * 8] ^= 0X80;
+                    gameData.boardData[64] ^= 0X80;
+                }
+            }
+
+        }
+
+        function movepiece(moveTo) {
+            if ((gameData.boardData[moveTo] & 0XA0) === 0) return;
+            let moveFrom;
+            for (let i = 0; i < 64; ++i) {
+                if ((gameData.boardData[i] & 0X80) === 0X80) {
+                    moveFrom = i;
+                    break;
+                }
+            }
+            gameData.boardData[64] ^= 0X80;
+            for (let i = 0; i < 64; ++i) {
+                gameData.boardData[i] &= 0XDF;
+            }
+            if (moveFrom === moveTo) {
+                gameData.boardData[moveFrom] ^= 0X80;
+                return;
+            }
+            if ((gameData.boardData[moveFrom] & 0X7) === 0) {
+                if (gameData.position.y === 0 || gameData.position.y === 7)
+                    gameData.boardData[moveFrom] ^= 0X4;
+                if (Math.abs(moveFrom - moveTo) === 16) gameData.boardData[moveFrom] ^= 0X6;
+            }
+            gameData.boardData[moveTo] = gameData.boardData[moveFrom] & 0XF;
+            gameData.boardData[moveFrom] = 0X7;
+            gameData.position.y = 7 - gameData.position.y;
+            switch (moveFrom) {
+                case 56:
+                    gameData.boardData[64] &= 0B11111011;
+                    break;
+                case 0:
+                    gameData.boardData[64] &= 0B11110111;
+                    break;
+                case 63:
+                    gameData.boardData[64] &= 0B11111110;
+                    break;
+                case 7:
+                    gameData.boardData[64] &= 0B11111101;
+                    break;
+                case 4:
+                    gameData.boardData[64] &= 0B11110101;
+                    if (moveTo === 1) {
+                        gameData.boardData[0] = 0X7;
+                        gameData.boardData[2] = 0X3;
+                    }
+                    if (moveTo === 6) {
+                        gameData.boardData[7] = 0X7;
+                        gameData.boardData[5] = 0X3;
+                    }
+                    break;
+                case 60:
+                    gameData.boardData[64] &= 0B11111010;
+                    if (moveTo === 57) {
+                        gameData.boardData[56] = 0X7;
+                        gameData.boardData[58] = 0XB;
+                    }
+                    if (moveTo === 62) {
+                        gameData.boardData[63] = 0X7;
+                        gameData.boardData[61] = 0XB;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            for (let i = 0; i < 64; ++i) {
+                gameData.boardData[i] &= 0XF;
+                if (gameData.boardData[i] === ((gameData.boardData[64] & 0X10) >> 1 | 0X6)) {
+                    const yDirection = ((gameData.boardData[64] & 0X10) === 0) ? -8 : 8;
+                    if ((gameData.boardData[i + yDirection] & 0X7) === 0)
+                        gameData.boardData[i] ^= 0X1;
+                    else gameData.boardData[i] ^= 0X6;
+
+                }
+            }
+            gameData.boardData[64] ^= 0X10;
+        }
+
+        function findDanger() {
+            for (let x = 0; x < 8; ++x) {
+                for (let y = 0; y < 8; ++y) {
+                    if ((gameData.boardData[64] & 0X10) ===
+                        ((gameData.boardData[x + y * 8] & 0X8) << 1)) {
+                        switch (gameData.boardData[x + y * 8] & 0X7) {
+                            case 0:
+                                attackPattern.pawn(x, y, 0X10);
+                                break;
+                            case 1:
+                                attackPattern.knight(x, y, 0X10);
+                                break;
+                            case 2:
+                                attackPattern.line(x, y, 1, 1, 0X10);
+                                attackPattern.line(x, y, -1, 1, 0X10);
+                                attackPattern.line(x, y, 1, -1, 0X10);
+                                attackPattern.line(x, y, -1, -1, 0X10);
+                                break;
+                            case 3:
+                                attackPattern.line(x, y, 0, 1);
+                                attackPattern.line(x, y, 0, -1);
+                                attackPattern.line(x, y, 1, 0);
+                                attackPattern.line(x, y, -1, 0);
+                                break;
+                            case 4:
+                                attackPattern.line(x, y, 1, 1);
+                                attackPattern.line(x, y, -1, 1);
+                                attackPattern.line(x, y, 1, -1);
+                                attackPattern.line(x, y, -1, -1);
+                                attackPattern.line(x, y, 0, 1);
+                                attackPattern.line(x, y, 0, -1);
+                                attackPattern.line(x, y, 1, 0);
+                                attackPattern.line(x, y, -1, 0);
+                                break;
+                            case 5:
+                                attackPattern.king(x, y);
+                                break;
+                            default: break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function targetSquare(location) {
+            let tempArray = new Uint8Array(65);
+            let r = 0;
+            const yPos = gameData.position.y;
+            for (let i = 0; i < 65; ++i) {
+                tempArray[i] = gameData.boardData[i];
+            }
+
+            gameData.boardData[location] |= 0X20;
+            movepiece(location);
+            gameData.boardData[64] ^= 0X10;
+            findDanger();
+
+            for (let x = 0; x < 8; ++x) {
+                for (let y = 0; y < 8; ++y) {
+                    if ((gameData.boardData[64] & 0X10) !==
+                        ((gameData.boardData[x + y * 8] & 0X8) << 1) &&
+                        ((gameData.boardData[x + y * 8] & 0X7) === 0X5) &&
+                        !((gameData.boardData[x + y * 8] & 0X10) === 0X10)) {
+                        tempArray[location] |= 0X20;
+                        r = 1;
+                    }
+                }
+            }
+
+            for (let i = 0; i < 65; ++i) {
+                gameData.boardData[i] = tempArray[i];
+            }
+            gameData.position.y = yPos;
+            return r;
+        }
+
+        window.addEventListener("keydown", input);
+    </script>
+
+</body>
+
+</html>
