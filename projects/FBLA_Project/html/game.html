@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../StyleSheets/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game</title>
+    <link rel="icon" type="image/x-icon" href="sprites/factory1.png">
+    
+</head>
+<body class="GameHolder" style="overflow: hidden;">
+    <script src="../js/main.js" type="module"></script>
+    
+    <div class="GameHolder"> 
+          
+        <div id="TopUI"       class="UiBasic">
+            <div class="InfoDisplay">
+                <img src="/sprites/Money.png" class="InfoImg" alt="">
+                <p id="MoneyText" class="InfoText">Money:$10000000</p>
+            </div>
+            <div class="InfoDisplay">
+                <img src="/sprites/Factory.png" class="InfoImg" alt="">
+                <p id="FactoryCountText" class="InfoText">Factorys:1</p>
+            </div>
+            <div class="InfoDisplay">
+                <img src="/sprites/LineGoseUp.png" class="InfoImg" alt="">
+                <p id="ProductionDisplay" class="InfoText">Production:1</p>
+            </div>
+            <div class="InfoDisplay">
+                <img src="/sprites/Time.png" class="InfoImg" alt="">
+                <p id="TimeDisplay" class="InfoText">Time:1</p>
+            </div>
+            <div class="InfoDisplay">
+                <img src="/sprites/Debt.png" class="InfoImg" alt="">
+                <button id="PayDebt">Pay</button>
+                <p id="DebtDisplay" class="InfoText">Debt:-100000</p>
+            </div>
+            <div class="InfoDisplay">
+                <img src="/sprites/Goods.png" class="InfoImg" alt="">
+                <p id="GoodsDisplay" class="InfoText">UnSoldGoods:-100000</p>
+            </div>
+            <div id="THING" style="scroll-behavior: auto; width: 50%; overflow: scroll;" class="InfoDisplay">
+                
+            </div>
+
+        </div>
+    </div>
+        
+        <div id="SideBarLeft" class="UiBasic">
+            <button id="DelButon">Delete Factory</button>
+            <div id="PolicyBoxHolder" class="PolicyBoxHolder">
+                <div id="PolicyHolder 0" class="Policy">
+                    <p for="" class="PolicyLable">Workers</p>
+                    <div id="ChangePolicy" class="ChangePolicy">
+                        <button class="Dec PolicyChange"></button>
+                            <p class="PolicyChangeTex" for="">100</p>
+                        <button class="Inc PolicyChange"></button>
+                    </div>
+                </div>
+            </div>
+            <div id="GolabalPolicyBoxHolder" class="PolicyBoxHolder">
+                
+            </div>
+        </div>
+        <div id="SideBarRight"class="UiBasic" style="width: 15%; left: 85%;">
+            <div id="FactoryName"style="width: 100%; height: 6%;">
+                <p  class="TextBase" style="font-size: 140%;" > Factory Name</p>
+            </div>
+            
+            <div id="StatsBox" class="UpgradeUIBox">
+                <div id="StatsRef 0" class="StatsBoxHolder">
+                    <div class="TwoWay">
+                        <label class="TextBase" for="">Stat Name</label>
+                    </div>
+                    <div class="TwoWay">
+                        <label class="TextBase" for=""> 1K /sec</label>
+                    </div>
+                </div>
+            </div>
+            <div id="UpgradesBox" name="Upgrades box" class="UpgradeUIBox">
+                <div id="UpgradeRef 0" name="Upgrade holder" class="StatsBoxHolder">
+                    <div name="UpgradeNameHolder" class="ThreeWay TextBase">
+                        <label id="UpgradeName" for="">WorkersCount</label>
+                    </div>
+                    <div name="LVL holder" class="ThreeWay TextBase">
+                        <label id="UpgradeLvl" for="">VI</label>
+                    </div>
+                    <button name="Upgrade" id="UpgradePrice" class="ThreeWay"> $100</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="BottemUI" class="UiBasic">
+            <button id="SaveButton">Save</button>
+            <button id="LoadButton">Load</button>
+            <p id="NewsReal" style="position: absolute; width: 90%;" class="NewsReal"> text asddasdasdasdasd</p>
+        </div>
+        <div style="border-radius: 20px;" id="EventDisplay" class="UiBasic">
+            <div style="width: 100%; height: 35%;">
+                <h1 style="text-align: center;">Title</h1>
+            </div>
+            <div style="width: 100%; height: 35%;">
+                <h3 style="text-align: center;">What happend</h3>
+            </div>
+            <div style="width: 100%; height: 25%;">
+                <button style="align-self: center;width: 25%; margin-left: 35%; ;">ok</button>
+            </div>
+        </div>
+        
+        <canvas id="canvas" style="background-color: black; position: absolute;"></canvas>
+        <div id="HoverTextDisplay">
+            <p id="HoverText" class="HoverText">HoverText</p>
+        </div>
+    </div>
+    
+</body>
+<footer>
+
+</footer>
+</html>

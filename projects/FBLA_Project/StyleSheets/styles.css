@@ -1,0 +1,283 @@
+@font-face { font-family: RETROTECH; src: url('/StyleSheets/RETROTECH.ttf') format("truetype"); }
+:root{
+    --MainGameColor: #ffffff44;
+    --SecondaryGameColor: #b60000;
+    --TertiaryGameColor:  #00B6B6;
+    --Textcolor: #ffffff;
+    --transpar: #00000000;
+    --DarkModeMain: rgb(23, 23, 23);
+    font-family: 'RETROTECH', monospace;
+    letter-spacing: .1rem;
+}
+button{
+    text-align: center;
+    background-color: var(--TertiaryGameColor);
+    border-style:solid ;
+    border-radius:5px ;
+    font-size: 150%;
+    font-family: 'RETROTECH', monospace;
+    border-color: color-mix(in oklab,var(--DarkModeMain) 80%,white);
+    color: color-mix(in oklab,var(--SecondaryGameColor) 50%, black);
+}
+button:hover{
+    background-color: color-mix(in oklab,var(--TertiaryGameColor) 90%,black) ;
+}
+.DarkBack{
+    background-color: var(--DarkModeMain);
+}
+
+.HomeMain{
+    background-color: var(--transpar);
+    width: 100%;
+    height: 1000px; 
+    margin: 0%;
+    align-content: center; 
+}
+.TitleText{
+    text-align: center;
+    color: var(--Textcolor);
+    width: 100%;
+    background-color: var(--transpar);
+    height: auto;
+    margin-top: 1%;
+}
+#ButtonHolder{
+    text-align: center;
+    align-self: center;
+    height:50%;
+    padding-top: 37.5;
+    flex-direction: row;
+}
+.ButtonStyle{
+   display: flexbox;
+   position: relative;
+   flex-direction: row;
+   top: 50%; 
+   width: 20%;
+   font-size: 50px;
+   border-radius: 20px;
+   border-color: var(--SecondaryGameColor);
+   border-style: solid;
+   border-width: 5px;
+   color: var(--Textcolor);
+   background-color: var(--DarkModeMain);
+   font-family: 'Courier New', Courier, monospace;
+}
+.UiBasic{
+    position: absolute;
+    background-color: var(--DarkModeMain);
+    width: 100px;
+    height: 100px;
+    border-color: var(--SecondaryGameColor);
+    border-width: 2px;
+    border-style:none ;
+    z-index: 1;
+}
+.ThreeWay{
+    display: flex;
+    width: 33.333%;
+    height: 100%;
+    text-align:center;
+    flex-direction:column;
+}
+.TwoWay{ 
+    display:         flex;
+    width:            50%;
+    height:          100%;
+    text-align:    center;
+    flex-direction:column;
+}
+#TopUI{
+    display: flex;
+    flex-direction:row;
+    flex-wrap: wrap;
+
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 10%;
+    color: #ffffff;
+    
+}
+.TextBase{
+    color: var(--Textcolor);
+    text-align: center;
+}
+
+#SideBarLeft{
+    
+    left: 0px;
+    top:10%;
+    width: 15%;
+    height: 80%;
+    
+}
+#SideBarRight{
+    left: 89.5%;
+    top:10%;
+    width: 10%;
+    height: 80%;
+    margin-top: 0%;
+
+}
+#BottemUI{
+    top:90%;
+    width: 100%;
+    height: 10%;
+}
+#EventDisplay{
+    width: 25%;
+    height: 25%;
+    top: 37.5%;
+    left: 37.5%;
+    color: var(--Textcolor);
+    background-color: var(--DarkModeMain);
+    border-color: var(--SecondaryGameColor);
+}
+.GameHolder{
+    margin:0px;
+    padding:0px;
+    background-color: var(--MainGameColor);
+}
+.UpgradeUIBox{
+    overflow: auto;
+    height: 45%;
+    width: 100%;
+    background-color: var(--DarkModeMain);
+}
+
+.StatsBoxHolder{
+    display: flex;
+    width: 98%;
+    height: 10%;
+    background-color: var(--DarkModeMain);
+    border-color: Var(--SecondaryGameColor);
+    border-width: 1%;
+    border-style: solid;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    text-align: center;
+    border-bottom: 0px solid var(--SecondaryGameColor);
+    border-left: 0px solid var(--SecondaryGameColor);
+    border-right: 0px solid var(--SecondaryGameColor);
+}
+label{
+    text-align: center;  
+}
+
+#FactoryName{
+    height: 10%;
+    width: 100%; 
+    text-align: center;
+}
+.PolicyBoxHolder{
+    height: 50%;
+
+}
+.Policy{
+    height: 10%;
+    color: var(--Textcolor);
+    background-color: var(--DarkModeMain);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    text-align: center;
+}
+.ChangePolicy{
+    display: flex;
+    width: 60%;
+    height: 100%;
+    text-align: right;
+    flex-wrap: nowrap;
+
+}
+.PolicyChange{
+    width: 40%;
+    
+    border-radius: 10px;
+}
+.PolicyChangeTex{
+    line-height: 200%;
+    font-size: 100%;
+    width: auto;
+    margin: auto;
+    
+}
+.PolicyLable{
+    width: 40%;
+    font-size: 100% ;
+    line-height:normal;
+}
+.Inc{
+    height: 100%;
+    aspect-ratio: 1 / 1;
+    background-size: 100%;
+    width: 20%;
+    background: url('/sprites/IncArrow.png');
+    background-color: transparent;
+    border: transparent;
+    background-size:contain;
+    background-repeat:no-repeat ;
+    
+}
+.Dec{
+    height: 100%;
+    aspect-ratio: 1 / 1 ;
+    background-size: 100%;
+    width: 20%;
+    background: url('/sprites/DecArrow.png');
+    white-space:nowrap;
+    border: transparent;
+    background-size:contain;
+    background-repeat:no-repeat ;
+}
+.NewsReal{
+    line-height: 0px;
+    white-space:nowrap;
+    color: var(--Textcolor);
+    width: 50;
+    font-size: 50px;
+}
+
+.InfoDisplay{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 24.9%;
+    height: 49%;
+    font-size: 120%;
+    text-align: center; 
+    
+}
+.InfoImg{
+    aspect-ratio: 1 / 1;
+    height: 100%;
+    width: auto;
+    background-size:contain;
+}
+.InfoText{
+    
+    width:fit-content;
+    word-wrap:wrap;
+    margin: auto;
+    font-size: 150%;
+    color: var(--Textcolor);
+}
+.BoxButton{
+    height: 100%;
+    width: auto;
+    aspect-ratio: 1 / 1;
+    background-size:contain ;
+}
+#HoverTextDisplay{
+    width: 15%;
+    height: 0%;
+    background-color: var(--DarkModeMain);
+    color: var(--Textcolor);
+    position: relative;
+    padding: 0%;
+   
+}
+#HoverText{
+    white-space:pre-wrap;
+}
