@@ -1,4 +1,4 @@
-@font-face { font-family: RETROTECH; src: url('/StyleSheets/RETROTECH.ttf') format("truetype"); }
+@font-face { font-family: RETROTECH; src: url('../StyleSheets/RETROTECH.ttf') format("truetype"); }
 :root{
     --MainGameColor: #ffffff44;
     --SecondaryGameColor: #b60000;
@@ -213,7 +213,7 @@ label{
     aspect-ratio: 1 / 1;
     background-size: 100%;
     width: 20%;
-    background: url('/sprites/IncArrow.png');
+    background: url('../sprites/IncArrow.png');
     background-color: transparent;
     border: transparent;
     background-size:contain;
@@ -225,7 +225,7 @@ label{
     aspect-ratio: 1 / 1 ;
     background-size: 100%;
     width: 20%;
-    background: url('/sprites/DecArrow.png');
+    background: url('../sprites/DecArrow.png');
     white-space:nowrap;
     border: transparent;
     background-size:contain;
