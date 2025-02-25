@@ -40,6 +40,7 @@
                                 src="./projects/4DimensionalMinesweeper/index.html"
                                 width="340"
                                 height="460"
+                                loading="lazy"
                             ></iframe>
                         </div>
                     </div>
@@ -47,10 +48,13 @@
                         <button class="header" 
                             onclick='
                                 if(document.getElementById("chessGame").style.display == "none")
-                                {document.getElementById("chessGame").style.display = "block";}
+                                {document.getElementById("chessGame").style.display = "block";
+                                document.getElementById("chessGame").src = "./projects/chess/chess.html";
+                                }
                                 else
                                 if(document.getElementById("chessGame").style.display == "block")
-                                {document.getElementById("chessGame").style.display = "none";}
+                                {document.getElementById("chessGame").style.display = "none";
+                                document.getElementById("chessGame").src = "./blank.html";}
                             '>Chess</button>
                         <div class="displayText">
                             Two player chess with ascii based graphics. The most notable thing about this project is
@@ -94,10 +98,15 @@
                         <button class="header"
                             onclick='
                                 if(document.getElementById("ASCII-art").style.display == "none")
-                                {document.getElementById("ASCII-art").style.display = "block";}
+                                {
+                                    document.getElementById("ASCII-art").style.display = "block";
+                                    document.getElementById("ASCII-art").src = "./projects/asciiArtEditor/display.html"
+                                }
                                 else
                                 if(document.getElementById("ASCII-art").style.display == "block")
-                                {document.getElementById("ASCII-art").style.display = "none";}
+                                {document.getElementById("ASCII-art").style.display = "none";
+                                document.getElementById("ASCII-art").src = "./blank.html"
+                                }
                             '
                         >ASCII Art Editor</button>
                         <div class="displayText">
@@ -116,13 +125,34 @@
                         
                     </div>
                     <div class="displayBox">
-                        <a class="header" href="./projects/asciiPlatformer/game.html">ASCII Platformer</a>
+                        <button class="header"
+                            onclick='
+                                if(document.getElementById("ASCII-game").style.display == "none")
+                                {
+                                    document.getElementById("ASCII-game").style.display = "block";
+                                    document.getElementById("ASCII-game").src = "./projects/asciiPlatformer/game.html"
+                                }
+                                else
+                                if(document.getElementById("ASCII-game").style.display == "block")
+                                {document.getElementById("ASCII-game").style.display = "none";
+                                document.getElementById("ASCII-game").src = "./blank.html"
+                                }
+                            '
+                        >ASCII Platformer</button>
                         <div class="displayText">
                             This is a platformer style game where three levels are being played simultaneously with one
                             game on each color channel. Due to the fact that the method for displaying the text is the
                             one mentioned above, each character is not actually being drawn separately to each color
                             channel, but rather, this effect is being emulated.
-                        </div>
+                            <br><br>
+                            <iframe 
+                                id="ASCII-game"
+                                style="display: none; border: none;"
+                                src="./projects/asciiPlatformer/game.html"
+                                width="1050"
+                                height="600"
+                            ></iframe>
+                            </div>
                     </div>
                     <div class="displayBox">
                         <a class="header" href="./projects/chromatic/index.html">Chromatic (ASCII platformer 2)</a>

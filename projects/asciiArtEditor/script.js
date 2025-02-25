@@ -345,7 +345,17 @@ for (let i = 0; i < 3; ++i) {
 }
 
 //everything in this function is what runs each frame--------------------------
-let frameInterval = setInterval(frame, 50);
+let frameInterval = 0;
+let isInterval = false
+frame();
+window.addEventListener("focus", (e) => 
+{
+    if(!isInterval)
+    {
+        isInterval = true;
+        frameInterval = setInterval(frame, 50);
+    }
+});
 function frame() {
 
     if (AGL.keysDown.includes("Enter")) {
