@@ -9,10 +9,12 @@
 
 <body style="background-color: black;">
 
-    <div style="text-align: center;">
-        <canvas id="Canvas" style="background-color: black;">
-    </div>
-
+    <canvas id="Canvas" style="background-color: black;">
+    <script>
+        window.addEventListener("keydown", (e) => {
+            e.preventDefault();
+        })
+    </script>
     <script>
         const canvas = document.getElementById("Canvas");
         canvas.width = 490;
