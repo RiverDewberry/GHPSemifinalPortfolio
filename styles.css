@@ -13,8 +13,12 @@ body {
     --text-hl: #426abf;
 
     background-color: var(--main-bg);
-    
+
     font-family: 'Courier New', Courier, monospace;
+}
+
+button {
+    border: none;
 }
 
 .pageHeader {
@@ -92,6 +96,14 @@ body {
     text-decoration: none;
 }
 
+.displayBox button.header:hover {
+    text-decoration: underline;
+}
+
+.displayBox button.header {
+    text-decoration: none;
+    font-family: 'Courier New', Courier, monospace;
+}
 .displayBox:hover .header {
     color: var(--text-hl);
 }

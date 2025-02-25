@@ -21,22 +21,54 @@
                 <div class="displayBoxDivider">
                     <div class="header">School Projects</div>
                     <div class="displayBox">
-                        <a class="header" href="./projects/4DimensionalMinesweeper/index.html">4D Minesweeper</a>
+                        <button class="header" 
+                            onclick='
+                                if(document.getElementById("4DimMS").style.display == "none")
+                                {document.getElementById("4DimMS").style.display = "block";}
+                                else
+                                if(document.getElementById("4DimMS").style.display == "block")
+                                {document.getElementById("4DimMS").style.display = "none";}
+                            '>4D Minesweeper</button>
                         <div class="displayText">
                             Minesweeper on a 4 by 4 by 4 by 4 hypercube. The hypercube is represented as a grid of grids
                             of cells that can either be mines or empty.
+                            <br>
+                            <br>
+                            <iframe 
+                                id="4DimMS"
+                                style="display: none;"
+                                src="./projects/4DimensionalMinesweeper/index.html"
+                                width="340"
+                                height="460"
+                            ></iframe>
                         </div>
                     </div>
                     <div class="displayBox">
-                        <a class="header" href="./projects/chess/chess.html">Chess</a>
+                        <button class="header" 
+                            onclick='
+                                if(document.getElementById("chessGame").style.display == "none")
+                                {document.getElementById("chessGame").style.display = "block";}
+                                else
+                                if(document.getElementById("chessGame").style.display == "block")
+                                {document.getElementById("chessGame").style.display = "none";}
+                            '>Chess</button>
                         <div class="displayText">
                             Two player chess with ascii based graphics. The most notable thing about this project is
                             that the entirety of the board's state (piece types, valid moves, the current player's turn,
                             ect.) is stored in a Uint8Array with a size of 65.
+                                <br>
+                                <br>
+                                <iframe 
+                                    id="chessGame"
+                                    style="display: none;"
+                                    src="./projects/chess/chess.html"
+                                    width="507"
+                                    height="548"
+                                ></iframe>
                         </div>
                     </div>
                     <div class="displayBox">
-                        <a class="header" href="./projects/FBLA_Project/index.html">FBLA Project</a>
+                        <a class="header" href="./projects/FBLA_Project/html/game.html">FBLA Project</a>
                         <div class="displayText">
                             A project made for the FBLA computer game and simulation programming competitive event. This
                             was a group project where my specific contributions were the art, some of the game logic,
@@ -59,11 +91,29 @@
                 <div class="displayBoxDivider">
                     <div class="header">Personal Projects</div>
                     <div class="displayBox">
-                        <a class="header" href="./projects/asciiArtEditor/display.html">ASCII Art Editor</a>
+                        <button class="header"
+                            onclick='
+                                if(document.getElementById("ASCII-art").style.display == "none")
+                                {document.getElementById("ASCII-art").style.display = "block";}
+                                else
+                                if(document.getElementById("ASCII-art").style.display == "block")
+                                {document.getElementById("ASCII-art").style.display = "none";}
+                            '
+                        >ASCII Art Editor</button>
                         <div class="displayText">
                             This is a program I made to create ASCII art. This project uses a system to display ascii
                             text on an html canvas that was later used for ASCII platformer.
+                            <br>
+                            <br>
+                            <iframe 
+                                id="ASCII-art"
+                                style="display: none; border: none;"
+                                src="./projects/asciiArtEditor/display.html"
+                                width="1050"
+                                height="500"
+                            ></iframe>
                         </div>
+                        
                     </div>
                     <div class="displayBox">
                         <a class="header" href="./projects/asciiPlatformer/game.html">ASCII Platformer</a>
@@ -93,6 +143,7 @@
             </div>
         </div>
     </div>
+
 </body>
 
 </html>
