@@ -1,4 +1,4 @@
 # GHPSemifinalPortfolio
 My portfolio for the GHP semifinal cs interview
 
-note: I am a finalist for the program
+note: I am now a finalist for the program
